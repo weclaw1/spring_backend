@@ -25,8 +25,6 @@ public class ApplicationUser {
 	private String password;
 
 	private String email;
-
-	private Date lastLogin;
 	
 	@OneToMany(mappedBy = "applicationUser")
 	private List<GameCharacter> gameCharacters;
@@ -53,14 +51,6 @@ public class ApplicationUser {
 
 	public void setGameCharacters(List<GameCharacter> gameCharacters) {
 		this.gameCharacters = gameCharacters;
-	}
-
-	public Date getLastLogin() {
-		return lastLogin;
-	}
-
-	public void setLastLogin(Date lastLogin) {
-		this.lastLogin = lastLogin;
 	}
 
 	public String getPassword() {
