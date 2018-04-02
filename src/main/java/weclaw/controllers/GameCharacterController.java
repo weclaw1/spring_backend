@@ -36,8 +36,8 @@ public class GameCharacterController {
 	public GameCharacter getGameCharacter(@PathVariable Long userId, @PathVariable Long characterId) {
 		this.validateUser(userId);
 
-		return Optional.ofNullable(this.characterRepository.findOne(characterId))
-					   .orElseThrow(() -> new GameCharacterNotFoundException(characterId));
+		return this.characterRepository.findById(characterId)
+					   				   .orElseThrow(() -> new GameCharacterNotFoundException(characterId));
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/characterName/{characterName}")
@@ -50,18 +50,18 @@ public class GameCharacterController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<?> postGameCharacter(@PathVariable Long userId, @RequestBody GameCharacter gameCharacter) {
-		return Optional.ofNullable(this.userRepository.findOne(userId))
-					   .map(user -> {
-						   	gameCharacter.setApplicationUser(user);
-							GameCharacter result = this.characterRepository.save(gameCharacter);
+		return this.userRepository.findById(userId)
+					   			.map(user -> {
+						   		  	gameCharacter.setApplicationUser(user);
+									GameCharacter result = this.characterRepository.save(gameCharacter);
 
-							URI location = ServletUriComponentsBuilder
-									.fromCurrentRequest().path("/{id}")
-									.buildAndExpand(result.getId()).toUri();
+									URI location = ServletUriComponentsBuilder
+										.fromCurrentRequest().path("/{id}")
+										.buildAndExpand(result.getId()).toUri();
 
-							return ResponseEntity.created(location).build();
-					   })
-					   .orElseThrow(() -> new ApplicationUserNotFoundException(userId));
+									return ResponseEntity.created(location).build();
+					   			})
+					   			.orElseThrow(() -> new ApplicationUserNotFoundException(userId));
 	}
 
 	@RequestMapping(method = RequestMethod.PUT, value = "/{characterId}")
@@ -69,7 +69,7 @@ public class GameCharacterController {
 											  @RequestBody GameCharacter gameCharacter) {
 		this.validateUser(userId);
 
-		if(this.characterRepository.exists(characterId)) {
+		if(this.characterRepository.existsById(characterId)) {
 			gameCharacter.setId(characterId);
 			this.characterRepository.save(gameCharacter);
 
@@ -83,8 +83,8 @@ public class GameCharacterController {
 	public ResponseEntity<?> deleteGameCharacter(@PathVariable Long userId, @PathVariable Long characterId) {
 		this.validateUser(userId);
 
-		if(this.characterRepository.exists(characterId)) {
-			this.characterRepository.delete(characterId);
+		if(this.characterRepository.existsById(characterId)) {
+			this.characterRepository.deleteById(characterId);
 
 			return ResponseEntity.ok().build();
 		} else {
@@ -93,8 +93,8 @@ public class GameCharacterController {
 	}
 
 	private void validateUser(Long userId) {
-		Optional.ofNullable(this.userRepository.findOne(userId))
-				.orElseThrow(() -> new ApplicationUserNotFoundException(userId));
+		this.userRepository.findById(userId)
+			.orElseThrow(() -> new ApplicationUserNotFoundException(userId));
 	}
 
 }

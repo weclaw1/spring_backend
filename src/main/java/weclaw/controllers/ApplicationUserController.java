@@ -30,8 +30,8 @@ public class ApplicationUserController {
 
 	@RequestMapping(method = RequestMethod.GET, value = "/{userId}")
 	public ApplicationUser getApplicationUser(@PathVariable Long userId) {
-		return Optional.ofNullable(this.userRepository.findOne(userId))
-					   .orElseThrow(() -> new ApplicationUserNotFoundException(userId));
+		return this.userRepository.findById(userId)
+								  .orElseThrow(() -> new ApplicationUserNotFoundException(userId));
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/username/{username}")
@@ -53,7 +53,7 @@ public class ApplicationUserController {
 
 	@RequestMapping(method = RequestMethod.PUT, value = "/{userId}")
 	public ResponseEntity<?> putApplicationUser(@PathVariable Long userId, @RequestBody ApplicationUser user) {
-		if(this.userRepository.exists(userId)) {
+		if(this.userRepository.existsById(userId)) {
 			user.setId(userId);
 			this.userRepository.save(user);
 			return ResponseEntity.ok().build();
@@ -64,8 +64,8 @@ public class ApplicationUserController {
 
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{userId}")
 	public ResponseEntity<?> deleteApplicationUser(@PathVariable Long userId) {
-		if(this.userRepository.exists(userId)) {
-			this.userRepository.delete(userId);
+		if(this.userRepository.existsById(userId)) {
+			this.userRepository.deleteById(userId);
 			return ResponseEntity.ok().build();
 		} else {
 			throw new ApplicationUserNotFoundException(userId);
