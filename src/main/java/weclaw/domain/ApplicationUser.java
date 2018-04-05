@@ -21,7 +21,6 @@ public class ApplicationUser {
 
 	private String username;
 	
-	@JsonProperty(access = Access.WRITE_ONLY)
 	private String password;
 
 	private String email;
