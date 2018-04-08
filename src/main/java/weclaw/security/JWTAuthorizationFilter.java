@@ -23,15 +23,13 @@ import weclaw.config.SecurityConfigProperties;
 import static weclaw.security.SecurityConstants.HEADER_STRING;
 import static weclaw.security.SecurityConstants.TOKEN_PREFIX;
 
-@Component
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
-    @Autowired
     private SecurityConfigProperties securityConfigProperties;
     
-    @Autowired
-    public JWTAuthorizationFilter(AuthenticationManager authManager) {
+    public JWTAuthorizationFilter(AuthenticationManager authManager, SecurityConfigProperties securityConfigProperties) {
         super(authManager);
+        this.securityConfigProperties = securityConfigProperties;
     }
 
     @Override

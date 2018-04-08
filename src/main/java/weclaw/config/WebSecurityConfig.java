@@ -31,11 +31,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private SecurityConfigProperties securityConfigProperties;
 
-    @Autowired
-    private JWTAuthenticationFilter authenticationFilter;
-
-    @Autowired
-    private JWTAuthorizationFilter authorizationFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -45,8 +40,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.POST, securityConfigProperties.getSignUpUrl()).permitAll()
             .anyRequest().authenticated()
             .and()
-            .addFilter(authenticationFilter)
-            .addFilter(authorizationFilter)
+            .addFilter(new JWTAuthenticationFilter(authenticationManager(), securityConfigProperties))
+            .addFilter(new JWTAuthorizationFilter(authenticationManager(), securityConfigProperties))
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 

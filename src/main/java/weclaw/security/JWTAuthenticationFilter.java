@@ -8,6 +8,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.security.core.userdetails.User;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,13 +28,15 @@ import weclaw.domain.ApplicationUser;
 import static weclaw.security.SecurityConstants.HEADER_STRING;
 import static weclaw.security.SecurityConstants.TOKEN_PREFIX;
 
-@Component
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     
-    @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired
+    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, SecurityConfigProperties securityConfigProperties) {
+        this.authenticationManager = authenticationManager;
+        this.securityConfigProperties = securityConfigProperties;
+    }
+
     private SecurityConfigProperties securityConfigProperties;
 
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
@@ -59,7 +62,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             Authentication auth) throws IOException, ServletException {
 
         String token = Jwts.builder()
-                .setSubject((String) auth.getPrincipal())
+                .setSubject(((User) auth.getPrincipal()).getUsername())
                 .setExpiration(new Date(System.currentTimeMillis() + securityConfigProperties.getExpirationTime()))
                 .signWith(SignatureAlgorithm.HS512, securityConfigProperties.getSecret().getBytes())
                 .compact();
