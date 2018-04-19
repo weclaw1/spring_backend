@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 @Entity
 public class ApplicationUser {
     @Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@JsonProperty(access = Access.READ_ONLY)
     private Long id;
 

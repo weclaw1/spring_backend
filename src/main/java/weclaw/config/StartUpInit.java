@@ -1,7 +1,11 @@
 package weclaw.config;
 
-import javax.annotation.PostConstruct;
+import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
+
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -21,12 +25,22 @@ public class StartUpInit {
     @Autowired
     private SecurityConfigProperties securityConfigProperties;
 
+    @Autowired
+    DataSource dataSource;
+
     @PostConstruct
     public void init(){
-        ApplicationUser admin = new ApplicationUser();
-        admin.setUsername(securityConfigProperties.getAdminUsername());
-        admin.setPassword(passwordEncoder.encode(securityConfigProperties.getAdminPassword()));
-        admin.setAdmin(true);
-        applicationUserRepository.save(admin);
+
+        Flyway flyway = new Flyway();
+        flyway.setDataSource(dataSource);
+        flyway.migrate();
+
+        if(!applicationUserRepository.findByUsername(securityConfigProperties.getAdminUsername()).isPresent()) {
+            ApplicationUser admin = new ApplicationUser();
+            admin.setUsername(securityConfigProperties.getAdminUsername());
+            admin.setPassword(passwordEncoder.encode(securityConfigProperties.getAdminPassword()));
+            admin.setAdmin(true);
+            applicationUserRepository.save(admin);
+        }
     }
 }
