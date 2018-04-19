@@ -75,6 +75,7 @@ public class ApplicationUserController {
 	public ResponseEntity<?> putApplicationUser(@PathVariable Long userId, @RequestBody ApplicationUser user) {
 		if(this.userRepository.existsById(userId)) {
 			user.setId(userId);
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
 			this.userRepository.save(user);
 			return ResponseEntity.ok().build();
 		} else {
