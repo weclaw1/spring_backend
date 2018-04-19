@@ -1,7 +1,7 @@
 package weclaw.security;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.FilterChain;
@@ -9,14 +9,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import weclaw.config.SecurityConfigProperties;
 
@@ -51,16 +51,22 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         Optional<String> token = Optional.ofNullable(request.getHeader(HEADER_STRING));
-        if (token.isPresent()) {
+        if(token.isPresent()) {
             // parse the token.
-            String user = Jwts.parser()
+            Claims claims = Jwts.parser()
                     .setSigningKey(securityConfigProperties.getSecret().getBytes())
                     .parseClaimsJws(token.get().replace(TOKEN_PREFIX, ""))
-                    .getBody()
-                    .getSubject();
+                    .getBody();
 
-            if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+            Optional<String> username = Optional.ofNullable(claims.getSubject());
+
+            if(username.isPresent()) {
+                List<GrantedAuthority> grantedAuthorities = AuthorityUtils.NO_AUTHORITIES;
+                Boolean isAdmin = Optional.ofNullable((Boolean) claims.get("admin")).orElse(false);
+                if(isAdmin) {
+                    grantedAuthorities = AuthorityUtils.createAuthorityList("ROLE_ADMIN");
+                }
+                return new UsernamePasswordAuthenticationToken(username.get(), null, grantedAuthorities);
             }
             return null;
         }

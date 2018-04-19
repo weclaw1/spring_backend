@@ -1,6 +1,5 @@
 package weclaw.domain;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -24,6 +23,8 @@ public class ApplicationUser {
 	private String password;
 
 	private String email;
+
+	private Boolean admin;
 	
 	@OneToMany(mappedBy = "applicationUser")
 	private List<GameCharacter> gameCharacters;
@@ -66,6 +67,14 @@ public class ApplicationUser {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public Boolean getAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(Boolean admin) {
+		this.admin = admin;
 	}
 
 }

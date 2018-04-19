@@ -3,7 +3,6 @@ package weclaw.controllers;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -62,6 +61,7 @@ public class ApplicationUserController {
 	public ResponseEntity<?> signUpApplicationUser(@RequestBody ApplicationUser user) {
 		user.setGameCharacters(new ArrayList<GameCharacter>());
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		user.setAdmin(false);
 		ApplicationUser result = this.userRepository.save(user);
 
 		URI location = ServletUriComponentsBuilder

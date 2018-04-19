@@ -1,4 +1,4 @@
-package weclaw.service;
+package weclaw.services;
 
 import java.util.Collections;
 import java.util.Optional;

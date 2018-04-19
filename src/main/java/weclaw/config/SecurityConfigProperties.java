@@ -10,6 +10,8 @@ public class SecurityConfigProperties {
     private String secret;
     private long expirationTime;
     private String signUpUrl;
+    private String adminUsername;
+    private String adminPassword;
 
     public String getSecret() {
         return this.secret;
@@ -34,4 +36,22 @@ public class SecurityConfigProperties {
     public void setSignUpUrl(String signUpUrl) {
         this.signUpUrl = signUpUrl;
     }
+
+	public String getAdminUsername() {
+		return adminUsername;
+	}
+
+	public void setAdminUsername(String adminUsername) {
+		this.adminUsername = adminUsername;
+	}
+
+	public String getAdminPassword() {
+		return adminPassword;
+	}
+
+	public void setAdminPassword(String adminPassword) {
+		this.adminPassword = adminPassword;
+	}
+
+
 }
